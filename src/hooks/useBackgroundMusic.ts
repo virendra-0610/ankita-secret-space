@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useRef, useEffect } from 'react';
 
 type Track = 'welcome' | 'heartKey' | 'blog';
 
@@ -15,13 +15,37 @@ export function useBackgroundMusic(currentTrack: Track) {
     if (!audioRef.current) {
       audioRef.current = new Audio();
       audioRef.current.loop = true;
+      
+      // Add event listeners for debugging
+      audioRef.current.addEventListener('play', () => {
+        console.debug('Audio started playing');
+      });
+      
+      audioRef.current.addEventListener('error', (e) => {
+        console.error('Audio error:', e);
+      });
     }
 
-    // Switch track when component changes
+    // Switch track and attempt immediate playback
     audioRef.current.src = tracks[currentTrack];
-    audioRef.current.play().catch(err => {
-      console.debug('Audio autoplay failed:', err);
-    });
+    console.debug('Loading track:', tracks[currentTrack]);
+    
+    // Attempt immediate playback
+    const playPromise = audioRef.current.play();
+    
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        console.debug('Autoplay successful');
+      }).catch(error => {
+        console.debug('Autoplay prevented:', error);
+        // Add click listener for first interaction
+        const startAudio = () => {
+          audioRef.current?.play();
+          document.removeEventListener('click', startAudio);
+        };
+        document.addEventListener('click', startAudio);
+      });
+    }
 
     return () => {
       if (audioRef.current) {
