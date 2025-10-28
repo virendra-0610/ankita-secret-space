@@ -6,7 +6,7 @@ module.exports = {
       fontFamily: {
         calligraphy: ['"Dancing Script"', 'cursive'],
         mono: ['"Space Mono"', 'monospace'],
-        // or: calligraphy: ['"Dancing Script"', 'cursive'],
+        typewriter: ['Special Elite', 'American Typewriter', 'Courier New', 'monospace'],
       },
       fontSize: {
         '8xl': '6rem',    // 96px

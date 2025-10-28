@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useBackgroundMusic } from './hooks/useBackgroundMusic';
 import { MusicControl } from './components/MusicControl';
@@ -188,9 +188,34 @@ export default function AnkitaGardenPage() {
     }
   };
 
+  // Keep track of where track changes are coming from
+  const [inBlogPage, setInBlogPage] = useState(false);
+
+  useEffect(() => {
+    // Only set inBlogPage when isBlog changes
+    setInBlogPage(isBlog);
+  }, [isBlog]);
+
+  // Handle track changes from children
+  const handleTrackChange = (track: 'welcome' | 'heartKey' | 'blog') => {
+    // In blog page, don't change routing state
+    if (inBlogPage) {
+      // Just let the audio hook handle the change
+      return;
+    }
+
+    // Only change page state if we're in the welcome/secure pages
+    if (track === 'blog') setIsBlog(true);
+    if (track === 'heartKey') setSecurePage(true);
+    if (track === 'welcome') {
+      setSecurePage(false);
+      setIsBlog(false);
+    }
+  };
+
   // Blog page with fixed audio controls
   if (isBlog) {
-    return <BlogPage audioRef={audioRef} currentTrack={currentTrack} />;
+    return <BlogPage audioRef={audioRef} currentTrack={currentTrack} onTrackChange={handleTrackChange} />;
   }
 
   return (
@@ -411,7 +436,11 @@ export default function AnkitaGardenPage() {
           </motion.div>
         </motion.div>
       )}
-      <MusicControl audioRef={audioRef} currentTrack={currentTrack} />
+      <MusicControl 
+        audioRef={audioRef} 
+        currentTrack={currentTrack} 
+        onTrackChange={handleTrackChange} 
+      />
     </div>
   );
 }

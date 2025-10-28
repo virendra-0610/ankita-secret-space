@@ -1,13 +1,37 @@
-/* Import a better font */
+/* Import fonts */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&display=swap');
+/* American Typewriter and Special Elite for typewriter fonts */
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
 
-.blog-calendar {
-  width: 60% !important;
-  margin: 0 auto !important;
-  border: none !important;
-  background: transparent !important;
-  font-family: 'Playfair Display', serif !important;
-  padding: 0.5rem;
+/* Define typewriter font stack */
+:root {
+  --font-typewriter: "Special Elite", "American Typewriter", "Courier New", monospace;
+}
+
+:root{
+  /* tune these values */
+  --calendar-font: "typewriter", serif;
+  --calendar-font-size: 1rem;       /* base font size for calendar */
+  --calendar-bg-alpha: 0.30;        /* background translucency for calendar container */
+  --tile-bg-alpha: 0.06;            /* background translucency for each date tile */
+  --tile-hover-alpha: 0.15;         /* hover highlight alpha */
+  --weekday-color: #BE123C;         /* weekday header color */
+  --modal-font: "Special Elite", "Courier New", monospace;
+  --modal-bg: rgba(255,255,255,0.62);
+  --modal-border: rgba(255,255,255,0.56);
+  --btn-save-grad: linear-gradient(90deg,#ef476f,#f78fb3);
+  --btn-clear-grad: linear-gradient(90deg,#ffffff,#f3f4f6);
+  /* music panel transparency (adjustable) */
+  --music-panel-opacity: 0.72;
+}
+
+/* Calendar container: font + translucent background */
+.blog-calendar,
+.blog-calendar .react-calendar {
+  font-family: var(--calendar-font) !important;
+  font-size: var(--calendar-font-size) !important;
+  background-color: rgba(0,255,255,var(--calendar-bg-alpha)) !important;
+  color: #977726;
 }
 
 /* Container adjustments */
@@ -19,7 +43,7 @@
 
 /* Navigation section */
 .blog-calendar .react-calendar__navigation {
-  height: 35px;
+  height: 50px;
   margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
@@ -27,13 +51,16 @@
 
 .blog-calendar .react-calendar__navigation button {
   font-size: 1em;
-  color: rgb(190, 18, 60);
+  color: rgb(10, 180, 60);
   font-weight: 500;
   padding: 0.3rem;
   min-width: 32px;
   background: rgba(255, 255, 255, 0.7);
-  border-radius: 6px;
+  border-radius: 10px;
   margin: 0 2px;
+  font-family: var(--calendar-font) !important;
+  font-size: calc(var(--calendar-font-size) * 0.98);
+  opacity: 0.99;
 }
 
 /* Weekday headers */
@@ -45,6 +72,7 @@
   padding: 0.3rem 0;
   margin-bottom: 0.3rem;
   border: none !important;
+  letter-spacing: 0.06em;
 }
 
 .blog-calendar .react-calendar__month-view__weekdays__weekday {
@@ -61,36 +89,39 @@
 
 /* Date grid */
 .blog-calendar .react-calendar__month-view__days {
-  gap: 3px;
-  padding: 2px;
+  gap: 8px;
+  padding: 10px;
 }
 
 /* Date tiles */
 .blog-calendar .react-calendar__tile {
-  aspect-ratio: 1;
-  font-size: 0.9em;
-  background: rgba(0, 0, 0, 0.04) !important;
-  border-radius: 6px;
+  aspect-ratio: 1.9;
+  font-size: calc(var(--calendar-font-size) * 0.98);
+  background: rgba(0, 0, 0, var(--tile-bg-alpha)) !important;
+  color: #111827 !important;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
-  padding: 0.35em !important;
+  transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+  padding: 0.1rem !important;
   height: auto !important;
+  font-family: var(--calendar-font);
 }
 
 .blog-calendar .react-calendar__tile:enabled:hover {
-  background: rgba(190, 18, 60, 0.15) !important;
-  transform: translateY(-1px);
+  background: rgba(10, 18, 160, var(--tile-hover-alpha)) !important;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
 }
 
 .blog-calendar .react-calendar__tile--now {
-  background: rgba(190, 18, 60, 0.1) !important;
+  background: rgba(190, 18, 60, 0.10) !important;
   font-weight: 600;
 }
 
 .blog-calendar .react-calendar__tile--active {
-  background: rgba(190, 18, 60, 0.9) !important;
+  background: rgba(190, 18, 60, 0.95) !important;
   color: white !important;
 }
 
@@ -120,8 +151,890 @@
   opacity: 0.95;
 }
 
-/* smaller tweaks for layout */
-.blog-calendar { max-width: 680px !important; width: 100% !important; }
+/* stronger variant used by MusicPanel with adjustable opacity */
+.animate-gradient-bg-strong {
+  background: linear-gradient(135deg, rgba(96,165,250,0.95) 0%, rgba(236,72,153,0.95) 50%, rgba(168,85,247,0.95) 100%);
+  background-size: 300% 300%;
+  animation: pastelShift 8s ease infinite;
+  opacity: var(--music-panel-opacity);
+}
 
-/* ensure notes column scroll works */
-.w-96 { min-width: 22rem; max-width: 22rem; }
+/* --- additions / overrides for redesigned BlogPage & MusicPanel --- */
+
+/* header left styling */
+.absolute.top-6.left-8 { pointer-events: none; }
+
+/* Blog header: night sky variant with animated stars */
+.blog-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 120px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  /* pastel blue dawn: soft blues and airy highlight */
+  background: linear-gradient(180deg, #6b9ece 0%, #acc5e0 30%, #e4e3e2 60%, #f7fbff 100%);
+  box-shadow: 0 6px 30px rgba(16,40,80,0.06);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  overflow: visible;
+}
+.blog-header-inner {
+  max-width: 1100px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+/* Header text specific styling */
+.blog-header-inner h2 {
+  font-family: var(--font-typewriter);
+  position: relative;
+  top: 4px; /* slight adjustment for typewriter baseline */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: 0.15em;
+}
+.header-flower { font-size: 36px; filter: drop-shadow(0 6px 18px rgba(25, 46, 162, 0.5)); }
+/* Typewriter font class */
+.font-typewriter {
+  font-family: var(--font-typewriter);
+}
+
+.header-title {
+  font-family: var(--font-typewriter);
+  font-weight: 400;
+  font-size: 44px;
+  letter-spacing: 0.1em;
+  color: #115293; /* light title on dark bg */
+  text-shadow: 0 6px 30px rgba(2,6,23,0.6), 0 2px 8px rgba(20,60,120,0.08);
+}
+
+/* subtle texture overlay */
+.blog-header::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 0; bottom: 0;
+  background-image: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.02), transparent 6%), radial-gradient(circle at 90% 80%, rgba(255,255,255,0.01), transparent 8%);
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+/* star layer specific to night header (lighter, animated points) */
+.star-field { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.star-field .star {
+  position: absolute;
+  width: 2px; height: 2px; border-radius: 50%;
+  background: linear-gradient(180deg, #ffffff, #e6f4ff);
+  opacity: 0.15;
+  filter: drop-shadow(0 0 10px rgba(180,215,255,0.9));
+  transform: scale(.8);
+  animation-name: twinkle; animation-iteration-count: infinite; animation-timing-function: linear;
+  will-change: opacity, transform, box-shadow;
+}
+@keyframes twinkle { 0% { opacity: 0.08; transform: scale(.1); box-shadow: 0 0 0 rgba(255,255,255,0); } 40% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 12px rgba(220,240,255,0.95); } 100% { opacity: 0.08; transform: scale(.6); box-shadow: 0 0 0 rgba(255,255,255,0); } }
+.star-field .star[data-size="l"] { width: 5px; height: 5px; filter: drop-shadow(0 0 5px rgba(220,240,255,0.95)); }
+
+/* give all stars a subtle rotating sheen via pseudo animation (optional) */
+.star-field .star::after { content: ''; position: absolute; inset: -2px; border-radius: 50%; filter: blur(2px); opacity: 0.6; }
+
+/* Moon removed: moon and its shadow/sparkles were removed per request; keeping starfield only */
+
+.star-field { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.star-field .star {
+  position: absolute;
+  width: 2px; height: 2px; border-radius: 50%;
+  background: radial-gradient(circle, #fff, rgba(255,255,255,0.25));
+  left: calc((var(--i) * 3%) + 2%);
+  top: calc((var(--i) * 3%) + 4%);
+  opacity: .7;
+  animation: twinkle calc(2s + (var(--i) * 0.03s)) ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%, 100% { transform: scale(0.8); opacity: 0.4; }
+  50% { transform: scale(1.4); opacity: 1; }
+}
+
+/* calendar slide behavior (keeps existing look) */
+.calendar-slide {
+  position:absolute; inset:0; background-position:center; background-size:cover;
+  filter: blur(6px) saturate(1.02);
+  transition: opacity 900ms cubic-bezier(.2,.9,.2,1), transform 900ms cubic-bezier(.2,.9,.2,1);
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+  pointer-events: none; /* slides are decorative only */
+}
+
+/* make calendar column full and modern */
+.blog-calendar { width:100% !important; max-width:none !important; background: rgba(255,255,255,0.24) !important; backdrop-filter: blur(8px); padding: 8px; border-radius: 14px; }
+
+/* modal input (already present) - ensure centered appearance */
+/* .fixed.left-1\/2.top-1\/2 { transform: none; } */ /* removed */
+
+/* Centering helper — use on modal wrapper */
+.modal-center {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  position: fixed;
+  z-index: 50;
+}
+
+/* Modal centering wrapper (ensure exact center) */
+.modal-center {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  position: fixed;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal content: translucent, blurred, elegant glass */
+.modal-center > .modal-content,
+.modal-center > div.bg-gradient-to-b /* backward compatibility */ {
+  width: 680px;
+  max-width: 94vw;
+  border-radius: 22px;
+  padding: 22px;
+  background: var(--modal-bg);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--modal-border);
+  box-shadow: 0 20px 50px rgba(8,12,30,0.18), inset 0 1px 0 rgba(255,255,255,0.5);
+  font-family: var(--modal-font);
+  color: #1f2937;
+}
+
+/* Header inside modal uses typewriter font and refined spacing */
+.modal-center .modal-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+  color: #9b1232;
+  font-family: var(--modal-font);
+}
+.modal-center .modal-header p {
+  margin: 6px 0 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-family: var(--modal-font);
+}
+
+/* Inviting textarea uses the same typewriter look and gentle inner glow */
+.memory-input-invite {
+  font-family: var(--modal-font);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #111827;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,250,250,0.95));
+  border: 1px solid rgba(160,160,160,0.08);
+  padding: 1rem;
+  border-radius: 14px;
+  resize: vertical;
+  min-height: 140px;
+  transition: box-shadow .18s ease, transform .12s ease;
+  box-shadow: inset 0 2px 8px rgba(255,255,255,0.6), 0 6px 20px rgba(12,18,40,0.06);
+}
+
+/* Focus state: lift and glow */
+.memory-input-invite:focus {
+  outline: none;
+  transform: translateY(-2px);
+  box-shadow: 0 24px 60px rgba(247,99,142,0.07), inset 0 1px 0 rgba(255,255,255,0.6);
+  border-color: rgba(233,30,99,0.18);
+}
+
+/* Modal actions row */
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 14px;
+  align-items: center;
+}
+
+/* Save button: vivid, rounded, subtle lift */
+.modal-btn {
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-family: var(--modal-font);
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: none;
+  transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+}
+
+/* Primary Save */
+.btn-save {
+  background: var(--btn-save-grad);
+  color: #fff;
+  box-shadow: 0 12px 30px rgba(236,72,153,0.18), 0 2px 6px rgba(0,0,0,0.08);
+}
+.btn-save:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(236,72,153,0.20); }
+.btn-save:active { transform: translateY(-1px); }
+
+/* Clear (secondary) - soft translucent */
+.btn-clear {
+  background: var(--btn-clear-grad);
+  color: #6b7280;
+  border: 1px solid rgba(203,213,225,0.45);
+  box-shadow: 0 8px 20px rgba(12,18,40,0.06);
+}
+.btn-clear:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(12,18,40,0.08); }
+.btn-clear:active { transform: translateY(0); }
+
+/* Modern music player styling */
+.music-panel-card {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  max-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.music-panel-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.2);
+}
+
+/* Music buttons modern style */
+.music-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+}
+
+.music-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15);
+}
+
+.music-btn--play {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, rgba(99,102,241,0.9), rgba(79,70,229,0.9));
+}
+
+.music-btn--nav {
+  background: rgba(255, 255, 255, 0.08);
+  width: 44px;
+  height: 44px;
+}
+
+.music-btn--play.playing {
+  background: linear-gradient(135deg, rgba(236,72,153,0.9), rgba(219,39,119,0.9));
+  box-shadow: 0 8px 32px rgba(236,72,153,0.25);
+}
+
+.music-btn--mute.muted {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Enhanced waves animation */
+.music-waves-layer {
+  z-index: 1;
+  opacity: 0.12;
+  transition: all 0.6s ease;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  transform: translateY(10%);
+}
+
+.music-waves-layer.waves-active {
+  opacity: 0.5;
+  transform: translateY(0);
+}
+
+.music-waves-svg {
+  width: 250%;
+  height: 160px;
+  display: block;
+  transform: translateX(-10%);
+}
+
+.wave {
+  fill: rgba(255, 255, 255, 0.4);
+  animation: waveMove 12s linear infinite;
+  filter: blur(0.5px);
+}
+
+.wave:nth-child(2) {
+  animation-duration: 15s;
+  opacity: 0.6;
+  animation-delay: -2s;
+}
+
+.wave:nth-child(3) {
+  animation-duration: 18s;
+  opacity: 0.4;
+  animation-delay: -4s;
+}
+
+@keyframes waveMove {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Enhanced visualization bars */
+.viz-bar {
+  width: 4px;
+  margin: 0 2px;
+  background: linear-gradient(180deg, rgba(255,255,255,1), rgba(255,255,255,0.2));
+  border-radius: 6px;
+  transform-origin: bottom;
+  box-shadow: 0 0 12px rgba(255,255,255,0.3);
+}
+
+/* Custom scrollbar styles */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.2) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 4px 0;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(255,255,255,0.2);
+  border-radius: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255,255,255,0.3);
+}
+
+/* small responsiveness */
+@media (max-width: 900px) {
+  .memory-input-invite { min-height: 120px; }
+  .calendar-slide { filter: blur(5px); }
+  :root { --tile-bg-alpha: 0.05; --calendar-bg-alpha: 0.22; }
+}
+/* ensure calendar container overlays slideshow */
+.blog-calendar { z-index: 2; width: 100% !important; max-width: none !important; }
+
+/* Fireworks for date selection */
+.fireworks-layer { position: absolute; inset: 0; z-index: 40; }
+.firework { position: absolute; transform: translate(-50%, -50%); }
+.firework span {
+  --dist: 64px;
+  position: absolute;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff, rgba(255,255,255,0.2) 60%);
+  box-shadow: 0 0 8px rgba(255,255,255,0.85), 0 0 16px rgba(236,72,153,0.45);
+  transform: rotate(calc(var(--n) * 36deg)) translate(0);
+  animation: burst 1.2s ease-out forwards;
+}
+@keyframes burst {
+  0% { opacity: 1; transform: rotate(var(--rot, 0)) translate(0) scale(0.8); }
+  75% { opacity: .95; transform: rotate(var(--rot, 0)) translate(var(--dist)) scale(1); }
+  100% { opacity: 0; transform: rotate(var(--rot, 0)) translate(calc(var(--dist) + 8px)) scale(0.9); }
+}
+
+/* Modal sparkling letters background */
+.modal-sparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  letter-spacing: .4em;
+  color: rgba(255,255,255,0.8);
+  text-shadow: 0 0 8px rgba(255,255,255,0.7), 0 0 18px rgba(236,72,153,0.3);
+  mix-blend-mode: screen;
+  animation: sparkleFlow 3.6s ease-in-out infinite;
+}
+@keyframes sparkleFlow {
+  0% { opacity: 0.6; transform: translateY(-4px); }
+  50% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0.6; transform: translateY(-4px); }
+}
+
+/* modal inviting input */
+.memory-input-invite {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(220, 38, 127, 0.08);
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(250,245,250,0.95));
+  box-shadow: 0 18px 50px rgba(3,10,40,0.12), inset 0 1px 0 rgba(255,255,255,0.6);
+  resize: vertical;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: #222;
+  transition: box-shadow .18s ease, transform .12s ease;
+}
+.memory-input-invite:focus {
+  outline: none;
+  box-shadow: 0 18px 60px rgba(244,63,94,0.09), 0 6px 18px rgba(12,18,40,0.08);
+  transform: translateY(-2px);
+  border-color: rgba(244,63,94,0.18);
+}
+
+/* custom scrollbar for modal entries */
+.custom-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(156,163,175,0.4) transparent; }
+.custom-scrollbar::-webkit-scrollbar { height:6px; width:6px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(156,163,175,0.35); border-radius:6px; }
+
+/* ensure calendar visuals are inviting */
+.react-calendar { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color: #3f3f46; }
+.react-calendar__tile { border-radius: 10px; transition: transform .12s ease, background .12s ease; }
+.react-calendar__tile:enabled:hover { transform: translateY(-6px); box-shadow: 0 8px 18px rgba(15,23,42,0.08); }
+
+/* Modern player icon animations */
+.icon-mute-svg {
+  stroke: currentColor;
+  fill: none;
+  transition: transform 0.3s ease, opacity 0.2s ease;
+}
+
+.music-btn--mute.muted .icon-mute-svg {
+  transform: scale(0.9);
+  opacity: 0.7;
+}
+
+.icon-play-svg {
+  transition: transform 0.3s ease;
+}
+
+.play-triangle {
+  fill: currentColor;
+  transform-origin: center;
+  transition: transform 0.2s ease;
+}
+
+.music-btn--play:not(.playing):hover .play-triangle {
+  transform: scale(1.1);
+}
+
+/* Pause bars animation */
+.pause-bar {
+  fill: currentColor;
+  transform-origin: center;
+  animation: modernPauseBounce 1.2s ease-in-out infinite;
+}
+
+.pause-bar.left { animation-delay: 0s; }
+.pause-bar.right { animation-delay: 0.2s; }
+
+@keyframes modernPauseBounce {
+  0%, 100% { transform: scaleY(0.8); opacity: 0.9; }
+  50% { transform: scaleY(1.1); opacity: 1; }
+}
+
+/* Visualization bars */
+.viz-bar {
+  background: linear-gradient(180deg, rgba(255,255,255,1), rgba(255,255,255,0.5));
+  border-radius: 4px;
+  transform-origin: bottom;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+}
+
+/* Small screens: hide big waves so layout stays clean */
+@media (max-width: 900px) {
+  .music-waves-layer { display: none; }
+  .music-btn--play { width:56px; height:56px; }
+  .music-btn--mute { width:44px; height:44px; }
+}
+
+/* Ensure calendar column never pushes right column off-screen and music column is visible */
+.page-main { display: flex; gap: 24px; align-items: stretch; height: 100%; }
+
+/* calendar flex: allowed to shrink but capped */
+.calendar-column {
+  flex: 1 1 0;
+  max-width: calc(100% - 300px); /* leaves room for music column */
+  min-width: 420px; /* keep calendar usable on narrow screens */
+  position: relative;
+}
+
+/* music fixed right column */
+.right-music-column {
+  flex: 0 0 260px; /* fixed width to ensure visibility */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+
+/* make music panel clearly visible above background */
+.music-panel-card { width: 100%; height: 100%; max-height: 600px; }
+
+/* Modal content: ensure width is applied in CSS too */
+.modal-content { width: 100%; max-width: 680px; box-sizing: border-box; }
+
+/* Small screens: music column collapses below calendar */
+@media (max-width: 920px) {
+  .calendar-column { max-width: 100%; min-width: 0; }
+  .right-music-column { flex: 0 0 auto; width: 100%; padding: 8px; }
+}
+
+/* Left vertical column — fixed, does not overlay calendar */
+.left-vertical-column {
+  width: 84px;                    /* adjust width as needed */
+  min-width: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 6px;
+  z-index: 30;
+  pointer-events: auto;
+}
+
+/* keep title stacked vertically inside the left column */
+.vertical-title { display:flex; flex-direction: column; align-items:center; gap:8px; }
+.vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: .12em;
+  font-weight: 700;
+  color: #9b1232;
+  transform: rotate(0deg); /* changed from 180deg to make text bottom-to-top */
+  font-family: "Playfair Display", serif;
+  font-size: 20px; /* slightly larger */
+}
+
+/* Main columns wrapper */
+.main-columns { 
+  display: flex;
+  gap: 0;
+  align-items: flex-start;
+  width: calc(100% - 84px);
+  min-height: calc(100vh - 120px);
+  padding: 20px;
+}
+
+/* Calendar column takes most space */
+.calendar-column {
+  flex: 1 1 auto;
+  min-width: 0;
+  position: relative;
+  margin-right: 20px;
+}
+
+/* Right music column fixed and sticky */
+.right-music-column {
+  flex: 0 0 320px;
+  position: sticky;
+  top: 140px;
+  align-self: flex-start;
+  height: calc(100vh - 160px);
+  display: flex;
+  align-items: flex-start;
+  padding: 0;
+}
+
+/* Modern music panel card */
+.music-panel-card {
+  width: 100%;
+  height: auto;
+  max-height: calc(100vh - 180px);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.2);
+  overflow: hidden;
+}
+
+/* Responsive layout */
+@media (max-width: 1280px) {
+  .right-music-column {
+    flex: 0 0 300px;
+  }
+  .main-columns {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .calendar-column {
+    margin-right: 16px;
+  }
+  .right-music-column {
+    flex: 0 0 280px;
+  }
+}
+
+@media (max-width: 920px) {
+  .main-columns {
+    flex-direction: column;
+    padding: 12px;
+  }
+  .left-vertical-column { 
+    width: 60px; 
+    min-width: 60px;
+  }
+  .calendar-column { 
+    min-width: 0;
+    max-width: 100%;
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+  .right-music-column { 
+    position: static;
+    height: auto;
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  .music-panel-card {
+    max-height: none;
+    margin-bottom: 20px;
+  }
+  .vertical-text { 
+    font-size: 14px; 
+  }
+}
+
+/* Additional decorative elements: header stars, small fireworks particles, modal sparkle bg */
+.header-stars { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+.header-stars .star {
+  position: absolute; width: 6px; height: 6px; border-radius: 50%;
+  background: radial-gradient(circle,#fff,#ffdce0);
+  opacity: 0; transform: scale(.6);
+  animation: headerStarFlash 3s ease-in-out infinite;
+}
+@keyframes headerStarFlash {
+  0% { opacity: 0; transform: scale(.6); }
+  45% { opacity: 0.95; transform: scale(1.1); }
+  100% { opacity: 0; transform: scale(.6); }
+}
+
+.firework-particle {
+  position: absolute; width: 7px; height: 7px; border-radius: 50%;
+  background: radial-gradient(circle, #fff, #ffd6e0);
+  pointer-events: none; opacity: 0.95; transform: translate(-50%, -50%);
+}
+
+.sparkle-bg { position: absolute; inset: 0; pointer-events: none; z-index: 1; mix-blend-mode: screen; }
+.sparkle-bg::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.12), transparent 10%), radial-gradient(circle at 80% 80%, rgba(255,240,240,0.08), transparent 12%);
+}
+
+/* small helper to run firework particle motion via inline styles */
+@keyframes fwParticleMove { to { transform: translate(var(--tx), var(--ty)) scale(0.6); opacity: 0; } }
+
+
+/* Allow fine control by variable as well (applied to the whole card if needed) */
+.music-panel-card { --music-panel-opacity: var(--music-panel-opacity); }
+
+/* Modern Player Buttons */
+.music-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.music-btn--play {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(99,102,241,0.9), rgba(79,70,229,0.9));
+  box-shadow: 0 8px 32px rgba(99,102,241,0.2);
+}
+
+.music-btn--play.playing {
+  background: linear-gradient(135deg, rgba(236,72,153,0.9), rgba(219,39,119,0.9));
+  box-shadow: 0 8px 32px rgba(236,72,153,0.25);
+}
+
+.music-btn--mute {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.music-btn--mute.muted {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Button Hover Effects */
+.music-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.2);
+}
+
+/* Play Icon Animations */
+.play-triangle {
+  transform-origin: center;
+  transition: transform 0.2s ease;
+}
+
+.music-btn--play:not(.playing):hover .play-triangle {
+  transform: scale(1.1);
+}
+
+/* Pause Bars Animation */
+.pause-bar {
+  fill: currentColor;
+  transform-origin: center;
+  animation: modernPauseBounce 1.2s ease-in-out infinite;
+}
+
+.pause-bar.left { animation-delay: 0s; }
+.pause-bar.right { animation-delay: 0.2s; }
+
+@keyframes modernPauseBounce {
+  0%, 100% { transform: scaleY(0.8); opacity: 0.9; }
+  50% { transform: scaleY(1.1); opacity: 1; }
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 1024px) {
+  .music-btn--play {
+    width: 44px;
+    height: 44px;
+  }
+
+  .music-btn--mute {
+    width: 36px;
+    height: 36px;
+  }
+
+  .viz-bar {
+    width: 2px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .music-panel-card {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  
+  .music-waves-layer {
+    opacity: 0.1;
+  }
+}
+.music-btn--mute.muted { box-shadow: 0 8px 22px rgba(244,114,182,0.06); transform: translateY(-2px) scale(.98); }
+.music-btn--mute .icon-mute-svg { transition: transform .18s ease, opacity .18s ease; }
+
+/* Viz bars */
+.viz-bar { width: 6px; background: linear-gradient(180deg,#fff,#fff); border-radius:4px; }
+
+/* Small screens: hide big waves so layout stays clean */
+@media (max-width: 900px) {
+  .music-waves-layer { display: none; }
+  .music-btn--play { width:56px; height:56px; }
+  .music-btn--mute { width:44px; height:44px; }
+}
+
+/* Ensure calendar column never pushes right column off-screen and music column is visible */
+.page-main { display: flex; gap: 24px; align-items: stretch; height: 100%; }
+
+/* calendar flex: allowed to shrink but capped */
+.calendar-column {
+  flex: 1 1 0;
+  max-width: calc(100% - 300px); /* leaves room for music column */
+  min-width: 420px; /* keep calendar usable on narrow screens */
+  position: relative;
+}
+
+/* music fixed right column */
+.right-music-column {
+  flex: 0 0 260px; /* fixed width to ensure visibility */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+
+/* make music panel clearly visible above background */
+.music-panel-card { width: 100%; height: 100%; max-height: 600px; }
+
+/* Modal content: ensure width is applied in CSS too */
+.modal-content { width: 100%; max-width: 680px; box-sizing: border-box; }
+
+/* Small screens: music column collapses below calendar */
+@media (max-width: 920px) {
+  .calendar-column { max-width: 100%; min-width: 0; }
+  .right-music-column { flex: 0 0 auto; width: 100%; padding: 8px; }
+}
+
+/* Left vertical column — fixed, does not overlay calendar */
+.left-vertical-column {
+  width: 84px;                    /* adjust width as needed */
+  min-width: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 6px;
+  z-index: 30;
+  pointer-events: auto;
+}
+
+/* keep title stacked vertically inside the left column */
+.vertical-title { display:flex; flex-direction: column; align-items:center; gap:8px; }
+.vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: .12em;
+  font-weight: 700;
+  color: #9b1232;
+  transform: rotate(0deg); /* changed from 180deg to make text bottom-to-top */
+  font-family: "Playfair Display", serif;
+  font-size: 20px; /* slightly larger */
+}
+
+/* Main columns wrapper */
+.main-columns { display:flex; gap: 24px; align-items: stretch; width: calc(100% - 84px); }
+
+/* calendar column rules */
+.calendar-column { flex: 1 1 0; max-width: calc(100% - 300px); min-width: 420px; position: relative; }
+
+/* right music column fixed width */
+.right-music-column { flex: 0 0 260px; display:flex; align-items:center; justify-content:center; padding: 12px; }
+
+/* ensure music panel doesn't get pushed off-screen */
+.music-panel-card { width: 100%; max-height: 640px; }
+
+/* responsive */
+@media (max-width: 920px) {
+  .left-vertical-column { width: 60px; min-width: 60px; }
+  .calendar-column { min-width: 0; max-width: 100%; }
+  .right-music-column { flex: 0 0 200px; }
+  .vertical-text { font-size: 14px; }
+}

@@ -1,85 +1,161 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import '../styles/blog.css';
 
 interface MusicPanelProps {
   audioRef: React.RefObject<HTMLAudioElement | null>;
   currentTrack: 'welcome' | 'heartKey' | 'blog';
+  onTrackChange?: (track: 'welcome' | 'heartKey' | 'blog') => void;
 }
 
-const trackInfo = {
-  welcome: { name: "Welcome Theme", color: "from-blue-500 to-purple-600" },
-  heartKey: { name: "Heart's Whisper", color: "from-rose-500 to-pink-600" },
-  blog: { name: "Garden Serenity", color: "from-emerald-500 to-teal-600" }
-};
+// Available tracks with their display names
+const tracks = [
+  { id: 'welcome', name: 'Welcome Theme' },
+  { id: 'heartKey', name: "Heart's Whisper" },
+  { id: 'blog', name: 'Garden Serenity' }
+] as const;
 
-export const MusicPanel: React.FC<MusicPanelProps> = ({ audioRef, currentTrack }) => {
+export const MusicPanel: React.FC<MusicPanelProps> = ({ audioRef, currentTrack, onTrackChange }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
 
+  // Set up audio event listeners
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.addEventListener('play', () => setIsPlaying(true));
-      audioRef.current.addEventListener('pause', () => setIsPlaying(false));
-    }
+    const audio = audioRef?.current;
+    if (!audio) return;
+
+    const onPlay = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+    const onEnded = () => {
+      setIsPlaying(false);
+      handleNext(); // Auto-play next track
+    };
+
+    audio.addEventListener('play', onPlay);
+    audio.addEventListener('pause', onPause);
+    audio.addEventListener('ended', onEnded);
+
+    // Update initial state
+    setIsPlaying(!audio.paused && !audio.ended);
+
+    return () => {
+      audio.removeEventListener('play', onPlay);
+      audio.removeEventListener('pause', onPause);
+      audio.removeEventListener('ended', onEnded);
+    };
   }, [audioRef]);
 
+  // Play/Pause the current track
   const handlePlayPause = () => {
-    if (!audioRef.current) return;
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play();
-    }
+    const audio = audioRef?.current;
+    if (!audio) return;
+    if (isPlaying) audio.pause();
+    else audio.play().catch(err => console.error('Playback failed:', err));
   };
 
-  const handleMute = () => {
-    if (!audioRef.current) return;
-    audioRef.current.muted = !audioRef.current.muted;
-    setIsMuted(!isMuted);
+  // Change to a specific track
+  const handleTrackChange = (trackId: typeof tracks[number]['id']) => {
+    const audio = audioRef?.current;
+    if (!audio) return;
+
+    // Update audio source
+    audio.src = `/music/${trackId}-theme.mp3`;
+    audio.play()
+      .then(() => setIsPlaying(true))
+      .catch(err => console.error('Playback failed:', err));
+
+    // Notify parent component
+    onTrackChange?.(trackId as any);
   };
+
+  // Play previous track
+  const handlePrevious = () => {
+    const currentIndex = tracks.findIndex(t => t.id === currentTrack);
+    const prevIndex = currentIndex > 0 ? currentIndex - 1 : tracks.length - 1;
+    handleTrackChange(tracks[prevIndex].id);
+  };
+
+  // Play next track
+  const handleNext = () => {
+    const currentIndex = tracks.findIndex(t => t.id === currentTrack);
+    const nextIndex = currentIndex < tracks.length - 1 ? currentIndex + 1 : 0;
+    handleTrackChange(tracks[nextIndex].id);
+  };
+
+  const currentTrackInfo = tracks.find(t => t.id === currentTrack);
 
   return (
-    <motion.div initial={{ x: 60 }} animate={{ x: 0 }} className="w-full h-[85%] relative overflow-hidden rounded-2xl shadow-xl">
-      {/* animated gradient background - pastel blue -> pink */}
-      <div className="absolute inset-0 animate-gradient-bg" />
-
-      {/* subtle moving overlay shapes */}
-      <motion.div className="absolute inset-0 pointer-events-none" animate={{ opacity: [0.6, 0.9, 0.6] }} transition={{ duration: 8, repeat: Infinity }}>
-        <svg className="w-full h-full" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0" stopColor="rgba(255,255,255,0.04)" />
-              <stop offset="1" stopColor="rgba(0,0,0,0.02)" />
-            </linearGradient>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#g1)" />
-        </svg>
-      </motion.div>
-
-      {/* content */}
-      <div className="relative z-10 p-4 h-full flex flex-col items-center justify-center gap-4">
-        <div className="w-32 h-32 rounded-xl bg-white/8 backdrop-blur-sm flex items-center justify-center">
-          {/* waveform or note */}
-          {isPlaying ? (
-            <div className="flex items-end gap-1 h-16">
-              {[...Array(5)].map((_, i) => (
-                <motion.div key={i} className="w-1.5 bg-white rounded-full" animate={{ height: [8, 48, 8] }} transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.1 }} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-3xl text-white/90">♪</div>
-          )}
-        </div>
-
-        <div className="text-center">
-          <div className="text-sm text-white/90">{trackInfo[currentTrack].name}</div>
-        </div>
-
-        <div className="flex gap-3">
-          <button onClick={handleMute} className="p-2 rounded-full bg-white/10 text-white"> {isMuted ? '🔇' : '🔊'} </button>
-          <button onClick={handlePlayPause} className="p-3 rounded-full bg-white/20 text-white"> {isPlaying ? '⏸' : '▶'} </button>
+    <div className="w-full bg-white/10 backdrop-blur-md rounded-xl overflow-hidden border border-white/20">
+      {/* Now Playing Section */}
+      <div className="p-4 border-b border-white/20">
+        <div className="text-lg text-white mb-2 font-medium">
+          {currentTrackInfo?.name}
+          {isPlaying && <span className="ml-2 text-sm opacity-60">• Now Playing</span>}
         </div>
       </div>
-    </motion.div>
+
+      {/* Controls */}
+      <div className="p-4 flex justify-center gap-3">
+        <button 
+          onClick={handlePrevious} 
+          className="p-2 text-white/80 hover:text-white transition-colors"
+          aria-label="Previous track"
+        >
+          <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M11 19l-9-7 9-7v14zm11 0l-9-7 9-7v14z" />
+          </svg>
+        </button>
+
+        <button 
+          onClick={handlePlayPause} 
+          className="p-3 bg-white/10 rounded-full text-white hover:bg-white/20 transition-colors"
+          aria-label={isPlaying ? 'Pause' : 'Play'}
+        >
+          {isPlaying ? (
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+              <rect x="6" y="4" width="4" height="16" rx="1" />
+              <rect x="14" y="4" width="4" height="16" rx="1" />
+            </svg>
+          ) : (
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          )}
+        </button>
+
+        <button 
+          onClick={handleNext} 
+          className="p-2 text-white/80 hover:text-white transition-colors"
+          aria-label="Next track"
+        >
+          <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M13 19l9-7-9-7v14zm-11 0l9-7-9-7v14z" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Track List */}
+      <div className="p-4 border-t border-white/20">
+        <div className="space-y-2">
+          {tracks.map(track => (
+            <button
+              key={track.id}
+              onClick={() => handleTrackChange(track.id)}
+              className={`w-full text-left p-2 rounded transition-colors ${
+                currentTrack === track.id
+                  ? 'bg-white/15 text-white'
+                  : 'text-white/70 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <div className="flex items-center">
+                <span className="flex-1">{track.name}</span>
+                {currentTrack === track.id && isPlaying && (
+                  <span className="text-xs animate-pulse">♪</span>
+                )}
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };

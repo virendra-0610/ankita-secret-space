@@ -4,9 +4,10 @@ import { motion } from 'framer-motion';
 type MusicControlProps = {
   audioRef: React.RefObject<HTMLAudioElement | null>;
   currentTrack: 'welcome' | 'heartKey' | 'blog';
+  onTrackChange?: (track: 'welcome' | 'heartKey' | 'blog') => void;
 };
 
-export const MusicControl: React.FC<MusicControlProps> = ({ audioRef, currentTrack }) => {
+export const MusicControl: React.FC<MusicControlProps> = ({ audioRef, currentTrack, onTrackChange }) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {

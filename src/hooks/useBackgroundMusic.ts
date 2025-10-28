@@ -4,6 +4,7 @@ type Track = 'welcome' | 'heartKey' | 'blog';
 
 export function useBackgroundMusic(currentTrack: Track) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const lastTrackRef = useRef<Track>(currentTrack);
   
   useEffect(() => {
     const tracks = {
@@ -24,31 +25,38 @@ export function useBackgroundMusic(currentTrack: Track) {
       audioRef.current.addEventListener('error', (e) => {
         console.error('Audio error:', e);
       });
+
+      // Set initial source
+      audioRef.current.src = tracks[currentTrack];
     }
 
-    // Switch track and attempt immediate playback
-    audioRef.current.src = tracks[currentTrack];
-    console.debug('Loading track:', tracks[currentTrack]);
-    
-    // Attempt immediate playback
-    const playPromise = audioRef.current.play();
-    
-    if (playPromise !== undefined) {
-      playPromise.then(() => {
-        console.debug('Autoplay successful');
-      }).catch(error => {
-        console.debug('Autoplay prevented:', error);
-        // Add click listener for first interaction
-        const startAudio = () => {
-          audioRef.current?.play();
-          document.removeEventListener('click', startAudio);
-        };
-        document.addEventListener('click', startAudio);
-      });
+    // Only switch track if it has changed (prevents unnecessary reloads)
+    if (currentTrack !== lastTrackRef.current) {
+      audioRef.current.src = tracks[currentTrack];
+      console.debug('Loading track:', tracks[currentTrack]);
+      lastTrackRef.current = currentTrack;
+      
+      // Attempt immediate playback only on track change
+      const playPromise = audioRef.current.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.debug('Autoplay successful');
+        }).catch(error => {
+          console.debug('Autoplay prevented:', error);
+          // Add click listener for first interaction
+          const startAudio = () => {
+            audioRef.current?.play();
+            document.removeEventListener('click', startAudio);
+          };
+          document.addEventListener('click', startAudio);
+        });
+      }
     }
 
     return () => {
-      if (audioRef.current) {
+      // Only cleanup on unmount, not on every track change
+      if (audioRef.current && !document.body.contains(audioRef.current)) {
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
       }
