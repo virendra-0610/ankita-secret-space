@@ -9,14 +9,13 @@ import '../styles/modal.css';
 import { MusicPanel } from './MusicPanel';
 import { loadAllNotes, saveNoteForDate, deleteNote } from '../utils/secureStore';
 
-// slideshow images in public folder
-const SLIDES = [
+// Unique background images from public folder
+const SLIDES = Array.from(new Set([
   '/images/backgrounds/bg1.jpg',
   '/images/backgrounds/bg2.jpg',
   '/images/backgrounds/bg3.jpg',
-  '/images/backgrounds/bg4.jpg',
-  '/images/backgrounds/bg5.jpg',
-];
+  '/images/backgrounds/bg4.jpg'
+]));
 
 // Calendar Value types
 type ValuePiece = Date | null;
@@ -39,20 +38,10 @@ export const BlogPage: React.FC<BlogPageProps> = ({ audioRef, currentTrack, onTr
   const pageRef = useRef<HTMLDivElement>(null);
   const lastPointer = useRef<{ x: number; y: number } | null>(null);
 
-  // precompute star positions once so they don't jump on every render
-  const stars = useMemo(() =>
-    Array.from({ length: 180 }).map(() => ({
-      left: Math.round(Math.random() * 10000) / 100,
-      top: Math.round(Math.random() * 10000) / 100,
-      size: Math.random() < 0.38 ? 'l' : 's',
-      // make most stars sparkle faster for a lively shimmer
-      dur: (Math.random() * 1) + 0.6, // blink duration between ~0.6s-2.2s
-      delay: Math.random() * 4 // initial offset so stars blink out of phase
-    })),
-  []);
+  // Removed stars array as it's no longer needed
 
   useEffect(() => {
-    const t = setInterval(() => setSlideIndex(i => (i + 1) % SLIDES.length), 7000);
+    const t = setInterval(() => setSlideIndex(i => (i + 1) % SLIDES.length), 10000);
     return () => clearInterval(t);
   }, []);
 
@@ -111,46 +100,52 @@ export const BlogPage: React.FC<BlogPageProps> = ({ audioRef, currentTrack, onTr
         {SLIDES.map((src, i) => (
           <motion.div
             key={src}
-            className="calendar-slide"
-            style={{ backgroundImage: `url(${src})` }}
-            animate={{ opacity: i === slideIndex ? 0.5 : 0, scale: i === slideIndex ? 1.035 : 1 }}
-            transition={{ opacity: { duration: 0.9 }, scale: { duration: 6, ease: 'easeInOut' } }}
+            className="calendar-slide absolute inset-0"
+            style={{ 
+              backgroundImage: `url(${src})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              willChange: 'opacity, transform',
+              filter: 'brightness(1.1) contrast(1.1)'
+            }}
+            animate={{ 
+              opacity: i === slideIndex ? 1 : 0, 
+              scale: i === slideIndex ? 1.05 : 1 
+            }}
+            transition={{ 
+              opacity: { duration: 3, ease: [0.4, 0, 0.2, 1] }, 
+              scale: { duration: 10, ease: 'easeInOut' } 
+            }}
           />
         ))}
       </div>
 
-      {/* Top header matched exactly to the welcome page 'Pause' */}
-      <div className="blog-header">
-        <div className="blog-header-inner">
-          <motion.span
-            className="header-flower mix-blend-difference cursor-pointer"
-            animate={{ rotate: [0, 360], scale: [1, 1.05, 1] }}
-            transition={{ rotate: { duration: 20, repeat: Infinity, ease: 'linear' }, scale: { duration: 2, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' } }}
-            aria-hidden
-          >
-            🌸
-          </motion.span>
-          <h2 className="text-9xl md:text-5xl font-typewriter text-blue-100 mix-blend-difference backdrop-blur-sm tracking-wider">Pause</h2>
-
-          {/* removed moon element per request */}
-        </div>
-        <div className="star-field" aria-hidden>
-          {stars.map((s, idx) => (
-            <span
-              key={idx}
-              className="star"
-              data-size={s.size}
-              style={{ left: `${s.left}%`, top: `${s.top}%`, animationDelay: `${s.delay}s`, animationDuration: `${s.dur}s` }}
-            />
-          ))}
-        </div>
+      {/* Pause text with animation */}
+      <div className="absolute top-6 left-8 z-10 flex items-center gap-3">
+        <motion.span
+          className="text-3xl mix-blend-difference cursor-pointer"
+          animate={{ rotate: [0, 360], scale: [1, 1.05, 1] }}
+          transition={{ rotate: { duration: 20, repeat: Infinity, ease: 'linear' }, scale: { duration: 2, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' } }}
+          aria-hidden
+        >
+          🌸
+        </motion.span>
+        <motion.h2 
+          className="text-5xl font-mono text-blue-100 mix-blend-difference tracking-widest font-light"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          style={{ fontFamily: "'Space Mono', 'Courier New', monospace" }}
+        >
+          Pause
+        </motion.h2>
       </div>
 
       {/* Main content area: calendar (center) + music (right) */}
       <div className="relative z-10 h-full w-full pt-24">
         <div className="main-columns flex-1 p-8 flex gap-8 items-stretch">
-          {/* Calendar column (fills available space) */}
-          <div className="calendar-column flex-1 relative rounded-2xl overflow-hidden shadow-xl p-6">
+          {/* Calendar column with strong glass effect */}
+          <div className="calendar-column flex-1 relative rounded-3xl overflow-hidden p-8 bg-white/30 backdrop-blur-md border border-white/20 shadow-2xl">
             <div className="flex-1 flex items-center justify-center h-full">
               <Calendar
                 onChange={handleDateChange}
@@ -163,8 +158,8 @@ export const BlogPage: React.FC<BlogPageProps> = ({ audioRef, currentTrack, onTr
             </div>
           </div>
 
-          {/* Music panel on the rightmost side (fixed width) */}
-          <div className="right-music-column ml-auto">
+          {/* Music panel with lighter glass effect */}
+          <div className="right-music-column ml-auto bg-white/20 backdrop-blur-sm rounded-3xl p-6 border border-white/10 shadow-xl">
             <MusicPanel 
               audioRef={audioRef} 
               currentTrack={currentTrack} 
