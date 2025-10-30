@@ -179,6 +179,11 @@ export default function AnkitaGardenPage() {
 
     if (ok) {
       // success -> blog page
+      // Stop background music before transitioning to blog page
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
       setIsBlog(true);
     } else {
       // failure -> welcome (home) page
@@ -205,7 +210,14 @@ export default function AnkitaGardenPage() {
     }
 
     // Only change page state if we're in the welcome/secure pages
-    if (track === 'blog') setIsBlog(true);
+    if (track === 'blog') {
+      // Stop any currently playing audio before transitioning to blog page
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+      setIsBlog(true);
+    }
     if (track === 'heartKey') setSecurePage(true);
     if (track === 'welcome') {
       setSecurePage(false);

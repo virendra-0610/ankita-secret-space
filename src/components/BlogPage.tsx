@@ -97,17 +97,21 @@ export const BlogPage: React.FC<BlogPageProps> = ({ audioRef, currentTrack, onTr
       lastPointer.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
     }}>
       {/* Global slideshow background */}
-      <div className="absolute inset-0 -z-20">
+      <div className="fixed inset-0 w-full h-full -z-20">
         {SLIDES.map((src, i) => (
           <motion.div
             key={src}
-            className="calendar-slide absolute inset-0"
+            className="calendar-slide fixed inset-0 w-full h-full"
             style={{ 
               backgroundImage: `url(${src})`,
               backgroundSize: 'cover',
-              backgroundPosition: 'center',
+              backgroundPosition: 'center center',
+              backgroundRepeat: 'no-repeat',
               willChange: 'opacity, transform',
-              filter: 'brightness(1.1) contrast(1.1)'
+              filter: 'brightness(1.1) contrast(1.1)',
+              objectFit: 'cover',
+              width: '100vw',
+              height: '100vh'
             }}
             animate={{ 
               opacity: i === slideIndex ? 1 : 0, 
@@ -146,7 +150,6 @@ export const BlogPage: React.FC<BlogPageProps> = ({ audioRef, currentTrack, onTr
       <div className="relative z-10 h-full w-full pt-24">
         <div className="main-columns flex-1 p-8">
           <div className="flex flex-col md:flex-row justify-between items-start gap-8">
-            {/* Left side - Music Player */}
             <div className="flex-1 w-full md:w-auto ml-auto">
               <MusicPanel audioRef={audioRef} />
             </div>

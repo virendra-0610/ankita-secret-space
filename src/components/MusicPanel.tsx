@@ -22,10 +22,16 @@ export const MusicPanel: React.FC<MusicPanelProps> = ({ audioRef }) => {
   const [progress, setProgress] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
   
-  // Set up audio event listeners
+  // Set up audio event listeners and start autoplay
   useEffect(() => {
     const audio = audioRef?.current;
     if (!audio) return;
+
+    // Set initial track and start playing
+    audio.src = TRACKS[currentTrackIndex].path;
+    audio.play()
+      .then(() => setIsPlaying(true))
+      .catch(err => console.error('Initial autoplay failed:', err));
 
     const onPlay = () => setIsPlaying(true);
     const onPause = () => setIsPlaying(false);
