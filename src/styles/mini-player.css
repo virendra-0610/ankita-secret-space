@@ -1,0 +1,519 @@
+.music-player {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 300px;
+}
+
+.mini-player {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border-radius: 1rem;
+  padding: 1rem;
+  min-height: 200px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 1.75rem;
+  color: #1a4b6e;
+  overflow: hidden;
+  position: relative;
+  border: 0px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes flow-idle {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes flow-active {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+
+
+@keyframes glow-idle {
+  0%, 100% {
+    filter: drop-shadow(0 0 2px rgba(191, 224, 3, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 4px rgba(42, 24, 207, 0.6));
+  }
+}
+
+@keyframes glow-active {
+  0% {
+    filter: drop-shadow(0 0 4px rgba(244, 114, 182, 0.7));
+  }
+  25% {
+    filter: drop-shadow(0 0 6px rgba(244, 114, 182, 0.8));
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(244, 114, 182, 0.9));
+  }
+  75% {
+    filter: drop-shadow(0 0 6px rgba(244, 114, 182, 0.8));
+  }
+  100% {
+    filter: drop-shadow(0 0 4px rgba(244, 114, 182, 0.7));
+  }
+}
+
+/* background video that covers the mini-player */
+.mini-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0; /* behind content */
+  opacity: 1;
+  pointer-events: none;
+  transform-origin: center;
+  border-radius: 0rem; /* match the player's border radius */
+  background: rgba(219, 7, 7, 0.594); /* subtle background while video loads */
+}
+
+.mini-player[data-playing="true"] .sparkle-flower {
+  animation: sparkle-active 15s infinite, glow-active 12s infinite;
+}
+
+/* Add different timing for alternating flowers */
+.mini-player[data-playing="true"] .sparkle-flower:nth-child(3n) {
+  animation-delay: -5s;
+}
+
+.mini-player[data-playing="true"] .sparkle-flower:nth-child(3n+1) {
+  animation-delay: -10s;
+}
+
+.mini-player[data-playing="true"] .sparkle-flower:nth-child(3n+2) {
+  animation-delay: -15s;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Tangerine:wght@400;700&display=swap');
+
+@keyframes roseGrow {
+  0% {
+    transform: scale(0) translateY(20px);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(0.7) translateY(10px);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes leafSway {
+  0%, 100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+.rose {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.rose::before {
+  content: '🌹';
+  font-size: 1.25rem;
+  position: absolute;
+  transform-origin: bottom center;
+}
+
+.leaf {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.leaf::before {
+  content: '🌿';
+  font-size: 1rem;
+  position: absolute;
+  transform-origin: bottom center;
+}
+
+/* Positioning roses and leaves along the growing path */
+.rose:nth-child(1) {
+  bottom: 10%;
+  left: 10%;
+  animation: roseGrow 2s ease-out forwards;
+}
+
+.leaf:nth-child(2) {
+  bottom: 20%;
+  left: 20%;
+  animation: roseGrow 2.2s ease-out forwards, leafSway 3s ease-in-out infinite;
+}
+
+.rose:nth-child(3) {
+  bottom: 30%;
+  left: 35%;
+  animation: roseGrow 2.4s ease-out forwards;
+}
+
+.leaf:nth-child(4) {
+  bottom: 40%;
+  left: 45%;
+  animation: roseGrow 2.6s ease-out forwards, leafSway 3s ease-in-out infinite;
+}
+
+.rose:nth-child(5) {
+  bottom: 50%;
+  right: 35%;
+  animation: roseGrow 2.8s ease-out forwards;
+}
+
+.leaf:nth-child(6) {
+  bottom: 60%;
+  right: 25%;
+  animation: roseGrow 3s ease-out forwards, leafSway 3s ease-in-out infinite;
+}
+
+.rose:nth-child(7) {
+  top: 20%;
+  right: 15%;
+  animation: roseGrow 3.2s ease-out forwards;
+}
+
+.album-art {
+  grid-row: span 0;
+  width: 0rem;
+  height: 0rem;
+  border-radius: 0rem;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.album-art::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, #9b7b82, #1370d4);
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+}
+
+.album-art::before {
+  content: '✿';
+  position: absolute;
+  font-size: 1.5rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgb(38, 70, 225);
+  z-index: 2;
+  opacity: 0;
+  transition: all 0.1s ease-out;
+}
+
+.track-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.track-title {
+  font-family: 'Poppins', 'Courier New', Courier, monospace;
+  font-weight: 700;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transform-origin: left;
+  animation: fadeSlideIn 0.1s ease-out;
+  z-index: 1;
+  position: relative;
+  text-shadow: 1px 1px 2px rgba(212, 203, 203, 0.1);
+  letter-spacing: 1.3px;
+}
+
+.track-artist {
+  font-family: 'Tangerine', cursive;
+  font-size: 1.25rem;
+  color: #07389b;
+  transform-origin: left;
+  animation: fadeSlideIn 0.5s ease-out 0.1s;
+  z-index: 1;
+  position: relative;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeSlideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes floatAnimation {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-3px) rotate(5deg);
+  }
+  75% {
+    transform: translateY(3px) rotate(-5deg);
+  }
+}
+
+.sparkle-flower {
+  animation: sparkle 4s infinite, glow 2s infinite, floatAnimation 6s ease-in-out infinite;
+}
+
+.sparkle-flower:nth-child(even) {
+  animation-delay: -2s;
+  animation-duration: 5s;
+}
+
+.player-controls {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.control-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  color: #4b5563;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.control-button:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+  transform: scale(1.1);
+}
+
+.control-button:active {
+  transform: scale(0.95);
+}
+
+.control-button svg {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.control-button:hover svg {
+  transform: scale(1.1);
+}
+
+@keyframes buttonPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.control-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px #6366f1;
+}
+
+.play-button {
+  background-color: #e11d48;
+  color: white;
+}
+
+.play-button:hover {
+  background-color: #be123c;
+  color: white;
+  transform: scale(1.05);
+}
+
+.play-button::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #e11d48;
+  z-index: -1;
+  animation: buttonPulse 2s infinite;
+}
+
+@keyframes progressGlow {
+  0% {
+    box-shadow: 0 0 5px #e11d48;
+  }
+  50% {
+    box-shadow: 0 0 10px #e11d48, 0 0 20px #e11d48;
+  }
+  100% {
+    box-shadow: 0 0 5px #e11d48;
+  }
+}
+
+.progress-bar {
+  grid-column: 1 / -1;
+  height: 0.25rem;
+  background-color: #f3f4f6;
+  border-radius: 9999px;
+  overflow: hidden;
+  cursor: pointer;
+  margin-top: -0.25rem;
+  position: relative;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  animation: progressGlow 2s ease-in-out infinite;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #e11d48;
+  transition: width 0.1s linear;
+  position: relative;
+}
+
+.progress-bar-fill::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  background-color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #e11d48;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.progress-bar:hover .progress-bar-fill::before {
+  opacity: 1;
+}
+
+.track-list {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.track-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.track-item:hover {
+  background-color: #f3f4f6;
+}
+
+.track-item.active {
+  background-color: #fdf2f2;
+  color: #e11d48;
+  font-weight: 500;
+}
+
+.playing-indicator {
+  color: #e11d48;
+  font-size: 1rem;
+  margin-left: 0.5rem;
+}
+
+/* Scrollbar styling */
+.track-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.track-list::-webkit-scrollbar-track {
+  background-color: #f3f4f6;
+  border-radius: 0.25rem;
+}
+
+.track-list::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 0.25rem;
+}
+
+.track-list::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
+}

@@ -1,128 +1,332 @@
 /* Import fonts */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&display=swap');
-/* American Typewriter and Special Elite for typewriter fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+/* Add a typewriter font for modal (keeps Playfair import above) */
 @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
-
-/* Define typewriter font stack */
-:root {
-  --font-typewriter: "Special Elite", "American Typewriter", "Courier New", monospace;
-}
+@import './layout.css';
 
 :root{
   /* tune these values */
-  --calendar-font: "typewriter", serif;
-  --calendar-font-size: 1rem;       /* base font size for calendar */
+  --calendar-font: "sans-serif", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --calendar-font-size: 1.1rem;       /* base font size for calendar */
   --calendar-bg-alpha: 0.30;        /* background translucency for calendar container */
-  --tile-bg-alpha: 0.06;            /* background translucency for each date tile */
+  --tile-bg-alpha: 0.05;            /* background translucency for each date tile */
   --tile-hover-alpha: 0.15;         /* hover highlight alpha */
-  --weekday-color: #BE123C;         /* weekday header color */
-  --modal-font: "Special Elite", "Courier New", monospace;
-  --modal-bg: rgba(255,255,255,0.62);
-  --modal-border: rgba(255,255,255,0.56);
+  --weekday-color: #130f10;         /* weekday header color */
+  --modal-font: "typewriter", serif;  /* font for modal content */
+  --modal-bg: rgba(6, 34, 216, 0.779);
+  --modal-border: rgba(83, 5, 5, 0.56);
   --btn-save-grad: linear-gradient(90deg,#ef476f,#f78fb3);
   --btn-clear-grad: linear-gradient(90deg,#ffffff,#f3f4f6);
   /* music panel transparency (adjustable) */
   --music-panel-opacity: 0.72;
 }
 
-/* Calendar container: font + translucent background */
+/* Main layout structure */
+.main-columns {
+  display: flex;
+  flex-direction: row !important;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.music-panel-container {
+  flex: 1;
+  min-width: 0;
+}
+
+.calendar-section {
+  position: sticky;
+  top: 2rem;
+  width: 400px;
+  flex-shrink: 0;
+  z-index: 20;
+  margin-left: 2rem;
+}
+
+/* Calendar container with picture header */
 .blog-calendar,
 .blog-calendar .react-calendar {
-  font-family: var(--calendar-font) !important;
+  font-family: 'Poppins', sans-serif !important;
   font-size: var(--calendar-font-size) !important;
-  background-color: rgba(0,255,255,var(--calendar-bg-alpha)) !important;
-  color: #977726;
+  background-color: #fff !important;
+  color: #262626;
+  box-shadow: 0 5px 50px rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100% !important;
+  border: none !important;
+  padding: 0 !important;
+  position: relative;
+  height: auto !important;
+  max-height: 640px !important;
+}
+
+/* Calendar header with background image */
+.blog-calendar .react-calendar__navigation {
+  position: relative;
+  height: 120px;
+  padding: 20px;
+  color: #fff;
+  background: #262626 url("https://images.unsplash.com/photo-1516912481808-3406841bd33c?ixlib=rb-0.3.5&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjE0NTg5fQ&s=183f2924ba5a8429441804609b2d4f61") no-repeat center / cover;
+  text-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+}
+
+/* Add gradient overlay to header */
+.blog-calendar .react-calendar__navigation::before {
+  content: "";
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  position: absolute;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.1));
+  pointer-events: none;
 }
 
 /* Container adjustments */
 .react-calendar {
+  width: 100% !important;
+  max-width: 800px !important;
   height: auto !important;
   overflow: visible !important;
   max-height: 80vh !important;
+  border: none !important;
 }
 
-/* Navigation section */
+/* Navigation section styling */
 .blog-calendar .react-calendar__navigation {
-  height: 50px;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 
 .blog-calendar .react-calendar__navigation button {
-  font-size: 1em;
-  color: rgb(10, 180, 60);
+  color: #ffffff;
   font-weight: 500;
-  padding: 0.3rem;
-  min-width: 32px;
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 10px;
-  margin: 0 2px;
-  font-family: var(--calendar-font) !important;
-  font-size: calc(var(--calendar-font-size) * 0.98);
-  opacity: 0.99;
+  background: transparent;
+  border: none;
+  position: relative;
+  z-index: 1;
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 2rem;
+  padding: 0;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.blog-calendar .react-calendar__navigation button.react-calendar__navigation__label {
+  font-size: 1.5rem;
+  opacity: 0.8;
+  text-align: left;
+}
+
+/* Hide prev/next month buttons */
+.blog-calendar .react-calendar__navigation button.react-calendar__navigation__prev-button,
+.blog-calendar .react-calendar__navigation button.react-calendar__navigation__next-button {
+  display: none;
+}
+
+.blog-calendar .react-calendar__navigation button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.blog-calendar .react-calendar__navigation button:disabled {
+  opacity: 0.5;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Calendar body styling */
+.blog-calendar .react-calendar__viewContainer {
+  padding: 20px;
+  background: #fff;
 }
 
 /* Weekday headers */
 .blog-calendar .react-calendar__month-view__weekdays {
   text-transform: uppercase;
   font-weight: 600;
-  font-size: 0.85em;
-  color: rgb(190, 18, 60);
-  padding: 0.3rem 0;
-  margin-bottom: 0.3rem;
+  font-size: 1em;
+  color: #262626;
+  padding: 0;
+  margin-bottom: 10px;
   border: none !important;
-  letter-spacing: 0.06em;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  margin-left: 0 !important;
+  width: 100% !important;
 }
 
 .blog-calendar .react-calendar__month-view__weekdays__weekday {
-  padding: 0.3rem;
+  padding: 8px 0 !important;
   text-align: center;
   border: none !important;
   text-decoration: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  font-size: 1em;
+  font-weight: 900;
+  color: #262626;
+}
+
+/* Ensure weekday text is centered */
+.blog-calendar .react-calendar__month-view__weekdays__weekday > abbr {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
 }
 
 .blog-calendar .react-calendar__month-view__weekdays__weekday abbr {
   text-decoration: none !important;
   border: none !important;
+  letter-spacing: 0;
+}
+
+/* Make Sunday red */
+.blog-calendar .react-calendar__month-view__weekdays__weekday:last-child {
+  color: #ff685d;
 }
 
 /* Date grid */
 .blog-calendar .react-calendar__month-view__days {
-  gap: 8px;
-  padding: 10px;
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  padding: 0;
+  margin-left: 0 !important; /* Remove any default margin */
+  width: 100% !important; /* Ensure full width */
 }
 
 /* Date tiles */
 .blog-calendar .react-calendar__tile {
-  aspect-ratio: 1.9;
-  font-size: calc(var(--calendar-font-size) * 0.98);
-  background: rgba(0, 0, 0, var(--tile-bg-alpha)) !important;
-  color: #111827 !important;
-  border-radius: 10px;
+  aspect-ratio: 1;
+  font-size: 0.9rem;
+  background: transparent !important;
+  color: #262626 !important;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
-  padding: 0.1rem !important;
-  height: auto !important;
-  font-family: var(--calendar-font);
+  height: 25px !important;
+  padding: 0 !important;
+  border: none !important;
+  position: relative;
+  transition: all 0.2s ease;
+  width: 100% !important; /* Ensure each tile takes full width */
 }
 
+/* Sunday dates in red */
+.blog-calendar .react-calendar__tile:nth-child(7n) {
+  color: #ff685d !important;
+  font-weight: 700;
+}
+
+.blog-calendar .react-calendar__tile:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Simple and clean background styles */
+.blog-background-slide {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: -2;
+  background-color: #f8f8f8 !important;
+}
+
+.blog-background-image {
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+  object-position: center !important;
+}
+
+.blog-background-slide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  animation: sparkle 10s infinite alternate;
+}
+
+.blog-background-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(228, 12, 12, 0.2),
+    rgba(6, 12, 172, 0.4)
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Calendar tile states and interactions */
 .blog-calendar .react-calendar__tile:enabled:hover {
-  background: rgba(10, 18, 160, var(--tile-hover-alpha)) !important;
-  transform: translateY(-4px);
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+  background-color: #009688 !important;
+  color: #fff !important;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .blog-calendar .react-calendar__tile--now {
-  background: rgba(190, 18, 60, 0.10) !important;
-  font-weight: 600;
+  background-color: #009688 !important;
+  color: #fff !important;
+  font-weight: 700;
 }
 
 .blog-calendar .react-calendar__tile--active {
-  background: rgba(190, 18, 60, 0.95) !important;
-  color: white !important;
+  background-color: #009688 !important;
+  color: #fff !important;
+  font-weight: 700;
+}
+
+/* Empty tiles (padding days) */
+.blog-calendar .react-calendar__month-view__days__day--neighboringMonth {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Add a subtle glow effect to active dates */
+.blog-calendar .react-calendar__tile--active::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, transparent 70%);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Disabled dates styling */
+.blog-calendar .react-calendar__tile:disabled {
+  opacity: 0.4;
+  background: rgba(255, 255, 255, 0.05) !important;
 }
 
 /* Month format override */
@@ -164,86 +368,38 @@
 /* header left styling */
 .absolute.top-6.left-8 { pointer-events: none; }
 
-/* Blog header: night sky variant with animated stars */
+/* Blog top header with gradient and flashing stars */
 .blog-header {
   position: fixed;
   top: 0; left: 0; right: 0;
-  height: 120px;
-  z-index: 40;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 24px;
-  /* pastel blue dawn: soft blues and airy highlight */
-  background: linear-gradient(180deg, #6b9ece 0%, #acc5e0 30%, #e4e3e2 60%, #f7fbff 100%);
-  box-shadow: 0 6px 30px rgba(16,40,80,0.06);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  border-bottom: 1px solid rgba(255,255,255,0.12);
-  overflow: visible;
+  height: 88px;
+  z-index: 20;
+  background: linear-gradient(90deg, rgba(236,72,153,0.28), rgba(79,70,229,0.28) 50%, rgba(14,165,233,0.28));
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255,255,255,0.28);
 }
 .blog-header-inner {
-  max-width: 1100px;
-  width: 100%;
+  position: relative;
+  height: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 24px;
+  gap: 12px;
+  padding: 0 20px;
+  color: #9b1232;
 }
-
-/* Header text specific styling */
-.blog-header-inner h2 {
-  font-family: var(--font-typewriter);
-  position: relative;
-  top: 4px; /* slight adjustment for typewriter baseline */
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  letter-spacing: 0.15em;
-}
-.header-flower { font-size: 36px; filter: drop-shadow(0 6px 18px rgba(25, 46, 162, 0.5)); }
-/* Typewriter font class */
-.font-typewriter {
-  font-family: var(--font-typewriter);
-}
-
+.header-flower { font-size: 20px; filter: drop-shadow(0 2px 6px rgba(255,255,255,0.6)); }
 .header-title {
-  font-family: var(--font-typewriter);
-  font-weight: 400;
-  font-size: 44px;
-  letter-spacing: 0.1em;
-  color: #115293; /* light title on dark bg */
-  text-shadow: 0 6px 30px rgba(2,6,23,0.6), 0 2px 8px rgba(20,60,120,0.08);
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
+  font-size: 30px;
+  letter-spacing: .06em;
+  background: linear-gradient(90deg,#1e3a8a,#9b1232,#0ea5e9);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 2px 18px rgba(255,255,255,0.35);
 }
-
-/* subtle texture overlay */
-.blog-header::after {
-  content: '';
-  position: absolute;
-  left: 0; right: 0; top: 0; bottom: 0;
-  background-image: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.02), transparent 6%), radial-gradient(circle at 90% 80%, rgba(255,255,255,0.01), transparent 8%);
-  pointer-events: none;
-  mix-blend-mode: overlay;
-}
-
-/* star layer specific to night header (lighter, animated points) */
-.star-field { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-.star-field .star {
-  position: absolute;
-  width: 2px; height: 2px; border-radius: 50%;
-  background: linear-gradient(180deg, #ffffff, #e6f4ff);
-  opacity: 0.15;
-  filter: drop-shadow(0 0 10px rgba(180,215,255,0.9));
-  transform: scale(.8);
-  animation-name: twinkle; animation-iteration-count: infinite; animation-timing-function: linear;
-  will-change: opacity, transform, box-shadow;
-}
-@keyframes twinkle { 0% { opacity: 0.08; transform: scale(.1); box-shadow: 0 0 0 rgba(255,255,255,0); } 40% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 12px rgba(220,240,255,0.95); } 100% { opacity: 0.08; transform: scale(.6); box-shadow: 0 0 0 rgba(255,255,255,0); } }
-.star-field .star[data-size="l"] { width: 5px; height: 5px; filter: drop-shadow(0 0 5px rgba(220,240,255,0.95)); }
-
-/* give all stars a subtle rotating sheen via pseudo animation (optional) */
-.star-field .star::after { content: ''; position: absolute; inset: -2px; border-radius: 50%; filter: blur(2px); opacity: 0.6; }
-
-/* Moon removed: moon and its shadow/sparkles were removed per request; keeping starfield only */
 
 .star-field { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .star-field .star {
@@ -261,16 +417,7 @@
 }
 
 /* calendar slide behavior (keeps existing look) */
-.calendar-slide {
-  position:absolute; inset:0; background-position:center; background-size:cover;
-  filter: blur(6px) saturate(1.02);
-  transition: opacity 900ms cubic-bezier(.2,.9,.2,1), transform 900ms cubic-bezier(.2,.9,.2,1);
-  will-change: opacity, transform;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  transform-style: preserve-3d;
-  pointer-events: none; /* slides are decorative only */
-}
+.calendar-slide { position:absolute; inset:0; background-position:center; background-size:cover; filter: blur(6px) saturate(1.02); transition: opacity 1s ease, transform 7s ease; }
 
 /* make calendar column full and modern */
 .blog-calendar { width:100% !important; max-width:none !important; background: rgba(255,255,255,0.24) !important; backdrop-filter: blur(8px); padding: 8px; border-radius: 14px; }
@@ -377,7 +524,7 @@
 /* Primary Save */
 .btn-save {
   background: var(--btn-save-grad);
-  color: #fff;
+  color: #2e7a6d;
   box-shadow: 0 12px 30px rgba(236,72,153,0.18), 0 2px 6px rgba(0,0,0,0.08);
 }
 .btn-save:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(236,72,153,0.20); }
@@ -393,144 +540,13 @@
 .btn-clear:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(12,18,40,0.08); }
 .btn-clear:active { transform: translateY(0); }
 
-/* Modern music player styling */
-.music-panel-card {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.15);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  max-height: 400px;
-  display: flex;
-  flex-direction: column;
-}
+/* small visual polish for music buttons when active */
+.music-btn--play.playing { box-shadow: 0 10px 28px rgba(99,102,241,0.14); transform: translateY(-2px); }
+.music-btn--mute.muted { box-shadow: 0 6px 16px rgba(244,114,182,0.06); }
 
-.music-panel-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.2);
-}
-
-/* Music buttons modern style */
-.music-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(8px);
-  cursor: pointer;
-}
-
-.music-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15);
-}
-
-.music-btn--play {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, rgba(99,102,241,0.9), rgba(79,70,229,0.9));
-}
-
-.music-btn--nav {
-  background: rgba(255, 255, 255, 0.08);
-  width: 44px;
-  height: 44px;
-}
-
-.music-btn--play.playing {
-  background: linear-gradient(135deg, rgba(236,72,153,0.9), rgba(219,39,119,0.9));
-  box-shadow: 0 8px 32px rgba(236,72,153,0.25);
-}
-
-.music-btn--mute.muted {
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.6);
-}
-
-/* Enhanced waves animation */
-.music-waves-layer {
-  z-index: 1;
-  opacity: 0.12;
-  transition: all 0.6s ease;
-  pointer-events: none;
-  mix-blend-mode: screen;
-  transform: translateY(10%);
-}
-
-.music-waves-layer.waves-active {
-  opacity: 0.5;
-  transform: translateY(0);
-}
-
-.music-waves-svg {
-  width: 250%;
-  height: 160px;
-  display: block;
-  transform: translateX(-10%);
-}
-
-.wave {
-  fill: rgba(255, 255, 255, 0.4);
-  animation: waveMove 12s linear infinite;
-  filter: blur(0.5px);
-}
-
-.wave:nth-child(2) {
-  animation-duration: 15s;
-  opacity: 0.6;
-  animation-delay: -2s;
-}
-
-.wave:nth-child(3) {
-  animation-duration: 18s;
-  opacity: 0.4;
-  animation-delay: -4s;
-}
-
-@keyframes waveMove {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
-/* Enhanced visualization bars */
-.viz-bar {
-  width: 4px;
-  margin: 0 2px;
-  background: linear-gradient(180deg, rgba(255,255,255,1), rgba(255,255,255,0.2));
-  border-radius: 6px;
-  transform-origin: bottom;
-  box-shadow: 0 0 12px rgba(255,255,255,0.3);
-}
-
-/* Custom scrollbar styles */
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.2) transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-  margin: 4px 0;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(255,255,255,0.2);
-  border-radius: 20px;
-  transition: background-color 0.3s ease;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255,255,255,0.3);
-}
+/* ensure visual hierarchy (waves behind) */
+.music-waves-layer { z-index: 1; }
+.music-panel-card .relative.z-10 { z-index: 3; }
 
 /* small responsiveness */
 @media (max-width: 900px) {
@@ -539,7 +555,12 @@
   :root { --tile-bg-alpha: 0.05; --calendar-bg-alpha: 0.22; }
 }
 /* ensure calendar container overlays slideshow */
-.blog-calendar { z-index: 2; width: 100% !important; max-width: none !important; }
+.blog-calendar { 
+  z-index: 60; 
+  width: 100% !important; 
+  max-width: none !important;
+  position: relative;
+}
 
 /* Fireworks for date selection */
 .fireworks-layer { position: absolute; inset: 0; z-index: 40; }
@@ -549,7 +570,7 @@
   position: absolute;
   width: 5px; height: 5px;
   border-radius: 50%;
-  background: radial-gradient(circle, #fff, rgba(255,255,255,0.2) 60%);
+  background: radial-gradient(circle, #ffffff, rgba(255,255,255,0.2) 60%);
   box-shadow: 0 0 8px rgba(255,255,255,0.85), 0 0 16px rgba(236,72,153,0.45);
   transform: rotate(calc(var(--n) * 36deg)) translate(0);
   animation: burst 1.2s ease-out forwards;
@@ -570,7 +591,7 @@
   justify-content: center;
   font-size: 26px;
   letter-spacing: .4em;
-  color: rgba(255,255,255,0.8);
+  color: rgba(100, 1, 1, 0.806);
   text-shadow: 0 0 8px rgba(255,255,255,0.7), 0 0 18px rgba(236,72,153,0.3);
   mix-blend-mode: screen;
   animation: sparkleFlow 3.6s ease-in-out infinite;
@@ -612,54 +633,31 @@
 .react-calendar__tile { border-radius: 10px; transition: transform .12s ease, background .12s ease; }
 .react-calendar__tile:enabled:hover { transform: translateY(-6px); box-shadow: 0 8px 18px rgba(15,23,42,0.08); }
 
-/* Modern player icon animations */
-.icon-mute-svg {
-  stroke: currentColor;
-  fill: none;
-  transition: transform 0.3s ease, opacity 0.2s ease;
-}
+/* animated SVG icon styles */
+.icon-mute { stroke: currentColor; fill: none; transition: transform .28s ease, opacity .2s ease; }
+.icon-mute.muted { transform: scale(0.94) rotate(-6deg); opacity: 0.9; }
+.icon-mute.unmuted { transform: scale(1); }
 
-.music-btn--mute.muted .icon-mute-svg {
-  transform: scale(0.9);
-  opacity: 0.7;
-}
+.icon-play { display:block; transition: transform .28s ease; }
+.icon-play.stopped .play-triangle { transform-origin: 50% 50%; animation: pulsePlay 1.6s ease-in-out infinite; opacity: 0.96; }
+@keyframes pulsePlay { 0% { transform: scale(1); } 50% { transform: scale(1.06); } 100% { transform: scale(1); } }
 
-.icon-play-svg {
-  transition: transform 0.3s ease;
-}
-
-.play-triangle {
-  fill: currentColor;
-  transform-origin: center;
-  transition: transform 0.2s ease;
-}
-
-.music-btn--play:not(.playing):hover .play-triangle {
-  transform: scale(1.1);
-}
-
-/* Pause bars animation */
-.pause-bar {
-  fill: currentColor;
-  transform-origin: center;
-  animation: modernPauseBounce 1.2s ease-in-out infinite;
-}
-
+/* Pause bars bounce when playing */
+.pause-bar { fill: currentColor; transform-origin: center; animation: pauseBounce 0.9s ease-in-out infinite; }
 .pause-bar.left { animation-delay: 0s; }
-.pause-bar.right { animation-delay: 0.2s; }
-
-@keyframes modernPauseBounce {
-  0%, 100% { transform: scaleY(0.8); opacity: 0.9; }
-  50% { transform: scaleY(1.1); opacity: 1; }
+.pause-bar.right { animation-delay: 0.18s; }
+@keyframes pauseBounce {
+  0% { transform: scaleY(0.65); opacity: 0.85; }
+  50% { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(0.7); opacity: 0.9; }
 }
 
-/* Visualization bars */
-.viz-bar {
-  background: linear-gradient(180deg, rgba(255,255,255,1), rgba(255,255,255,0.5));
-  border-radius: 4px;
-  transform-origin: bottom;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
-}
+/* Muted visual state */
+.music-btn--mute.muted { box-shadow: 0 8px 22px rgba(244,114,182,0.06); transform: translateY(-2px) scale(.98); }
+.music-btn--mute .icon-mute-svg { transition: transform .18s ease, opacity .18s ease; }
+
+/* Viz bars */
+.viz-bar { width: 6px; background: linear-gradient(180deg,#fff,#fff); border-radius:4px; }
 
 /* Small screens: hide big waves so layout stays clean */
 @media (max-width: 900px) {
@@ -726,229 +724,56 @@
 }
 
 /* Main columns wrapper */
-.main-columns { 
-  display: flex;
-  gap: 0;
-  align-items: flex-start;
-  width: calc(100% - 84px);
-  min-height: calc(100vh - 120px);
-  padding: 20px;
-}
+.main-columns { display:flex; gap: 24px; align-items: stretch; width: calc(100% - 84px); }
 
-/* Calendar column takes most space */
-.calendar-column {
-  flex: 1 1 auto;
-  min-width: 0;
-  position: relative;
-  margin-right: 20px;
-}
+/* calendar column rules */
+.calendar-column { flex: 1 1 0; max-width: calc(100% - 300px); min-width: 420px; position: relative; }
 
-/* Right music column fixed and sticky */
-.right-music-column {
-  flex: 0 0 320px;
-  position: sticky;
-  top: 140px;
-  align-self: flex-start;
-  height: calc(100vh - 160px);
-  display: flex;
-  align-items: flex-start;
-  padding: 0;
-}
+/* right music column fixed width */
+.right-music-column { flex: 0 0 260px; display:flex; align-items:center; justify-content:center; padding: 12px; }
 
-/* Modern music panel card */
-.music-panel-card {
-  width: 100%;
-  height: auto;
-  max-height: calc(100vh - 180px);
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.2);
-  overflow: hidden;
-}
+/* ensure music panel doesn't get pushed off-screen */
+.music-panel-card { width: 100%; max-height: 640px; }
 
-/* Responsive layout */
-@media (max-width: 1280px) {
-  .right-music-column {
-    flex: 0 0 300px;
-  }
-  .main-columns {
-    padding: 16px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .calendar-column {
-    margin-right: 16px;
-  }
-  .right-music-column {
-    flex: 0 0 280px;
-  }
-}
-
+/* responsive */
 @media (max-width: 920px) {
-  .main-columns {
-    flex-direction: column;
-    padding: 12px;
-  }
-  .left-vertical-column { 
-    width: 60px; 
-    min-width: 60px;
-  }
-  .calendar-column { 
-    min-width: 0;
-    max-width: 100%;
-    margin-right: 0;
-    margin-bottom: 20px;
-  }
-  .right-music-column { 
-    position: static;
-    height: auto;
-    flex: 0 0 auto;
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
-  }
-  .music-panel-card {
-    max-height: none;
-    margin-bottom: 20px;
-  }
-  .vertical-text { 
-    font-size: 14px; 
-  }
+  .left-vertical-column { width: 60px; min-width: 60px; }
+  .calendar-column { min-width: 0; max-width: 100%; }
+  .right-music-column { flex: 0 0 200px; }
+  .vertical-text { font-size: 14px; }
 }
-
-/* Additional decorative elements: header stars, small fireworks particles, modal sparkle bg */
-.header-stars { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
-.header-stars .star {
-  position: absolute; width: 6px; height: 6px; border-radius: 50%;
-  background: radial-gradient(circle,#fff,#ffdce0);
-  opacity: 0; transform: scale(.6);
-  animation: headerStarFlash 3s ease-in-out infinite;
-}
-@keyframes headerStarFlash {
-  0% { opacity: 0; transform: scale(.6); }
-  45% { opacity: 0.95; transform: scale(1.1); }
-  100% { opacity: 0; transform: scale(.6); }
-}
-
-.firework-particle {
-  position: absolute; width: 7px; height: 7px; border-radius: 50%;
-  background: radial-gradient(circle, #fff, #ffd6e0);
-  pointer-events: none; opacity: 0.95; transform: translate(-50%, -50%);
-}
-
-.sparkle-bg { position: absolute; inset: 0; pointer-events: none; z-index: 1; mix-blend-mode: screen; }
-.sparkle-bg::before {
-  content: '';
-  position: absolute; inset: 0;
-  background-image: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.12), transparent 10%), radial-gradient(circle at 80% 80%, rgba(255,240,240,0.08), transparent 12%);
-}
-
-/* small helper to run firework particle motion via inline styles */
-@keyframes fwParticleMove { to { transform: translate(var(--tx), var(--ty)) scale(0.6); opacity: 0; } }
-
 
 /* Allow fine control by variable as well (applied to the whole card if needed) */
 .music-panel-card { --music-panel-opacity: var(--music-panel-opacity); }
 
-/* Modern Player Buttons */
+/* Button style + animations */
 .music-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  backdrop-filter: blur(8px);
-  transition: all 0.3s ease;
+  display:inline-flex; align-items:center; justify-content:center;
+  width:56px; height:56px; border-radius:12px; border:none; cursor:pointer;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+  color: white; box-shadow: 0 10px 28px rgba(3,10,40,0.22); transition: transform .18s ease, box-shadow .18s ease;
 }
+.music-btn--play { width:68px; height:68px; border-radius:14px; }
+.music-btn--mute { width:50px; height:50px; border-radius:12px; }
 
-.music-btn--play {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, rgba(99,102,241,0.9), rgba(79,70,229,0.9));
-  box-shadow: 0 8px 32px rgba(99,102,241,0.2);
-}
+/* Hover lift */
+.music-btn:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(3,10,40,0.28); }
 
-.music-btn--play.playing {
-  background: linear-gradient(135deg, rgba(236,72,153,0.9), rgba(219,39,119,0.9));
-  box-shadow: 0 8px 32px rgba(236,72,153,0.25);
-}
+/* Play pulse when stopped */
+.icon-play-svg .play-triangle { transform-origin: 50% 50%; animation: playPulse 1.6s ease-in-out infinite; opacity: .96; }
+@keyframes playPulse { 0% { transform: scale(1); } 50% { transform: scale(1.06); } 100% { transform: scale(1); } }
 
-.music-btn--mute {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.music-btn--mute.muted {
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.6);
-}
-
-/* Button Hover Effects */
-.music-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.2);
-}
-
-/* Play Icon Animations */
-.play-triangle {
-  transform-origin: center;
-  transition: transform 0.2s ease;
-}
-
-.music-btn--play:not(.playing):hover .play-triangle {
-  transform: scale(1.1);
-}
-
-/* Pause Bars Animation */
-.pause-bar {
-  fill: currentColor;
-  transform-origin: center;
-  animation: modernPauseBounce 1.2s ease-in-out infinite;
-}
-
+/* Pause bars bounce when playing */
+.pause-bar { fill: currentColor; transform-origin: center; animation: pauseBounce 0.9s ease-in-out infinite; }
 .pause-bar.left { animation-delay: 0s; }
-.pause-bar.right { animation-delay: 0.2s; }
-
-@keyframes modernPauseBounce {
-  0%, 100% { transform: scaleY(0.8); opacity: 0.9; }
-  50% { transform: scaleY(1.1); opacity: 1; }
+.pause-bar.right { animation-delay: 0.18s; }
+@keyframes pauseBounce {
+  0% { transform: scaleY(0.65); opacity: 0.85; }
+  50% { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(0.7); opacity: 0.9; }
 }
 
-/* Responsive Styles */
-@media screen and (max-width: 1024px) {
-  .music-btn--play {
-    width: 44px;
-    height: 44px;
-  }
-
-  .music-btn--mute {
-    width: 36px;
-    height: 36px;
-  }
-
-  .viz-bar {
-    width: 2px;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .music-panel-card {
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
-  }
-  
-  .music-waves-layer {
-    opacity: 0.1;
-  }
-}
+/* Muted visual state */
 .music-btn--mute.muted { box-shadow: 0 8px 22px rgba(244,114,182,0.06); transform: translateY(-2px) scale(.98); }
 .music-btn--mute .icon-mute-svg { transition: transform .18s ease, opacity .18s ease; }
 

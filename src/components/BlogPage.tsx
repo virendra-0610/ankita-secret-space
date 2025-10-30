@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom';
 import 'react-calendar/dist/Calendar.css';
 import '../styles/blog.css';
 import '../styles/modal.css';
+import '../styles/page-layout.css';
 import { MusicPanel } from './MusicPanel';
 import { loadAllNotes, saveNoteForDate, deleteNote } from '../utils/secureStore';
 
@@ -141,12 +142,17 @@ export const BlogPage: React.FC<BlogPageProps> = ({ audioRef, currentTrack, onTr
         </motion.h2>
       </div>
 
-      {/* Main content area: calendar (center) + music (right) */}
+      {/* Main content area */}
       <div className="relative z-10 h-full w-full pt-24">
-        <div className="main-columns flex-1 p-8 flex gap-8 items-stretch">
-          {/* Calendar column with strong glass effect */}
-          <div className="calendar-column flex-1 relative rounded-3xl overflow-hidden p-8 bg-white/30 backdrop-blur-md border border-white/20 shadow-2xl">
-            <div className="flex-1 flex items-center justify-center h-full">
+        <div className="main-columns flex-1 p-8">
+          <div className="flex flex-col md:flex-row justify-between items-start gap-8">
+            {/* Left side - Music Player */}
+            <div className="flex-1 w-full md:w-auto ml-auto">
+              <MusicPanel audioRef={audioRef} />
+            </div>
+
+            {/* Right side - Calendar */}
+            <div className="calendar-section w-full md:w-[400px] relative rounded-3xl overflow-hidden p-4 bg-white/30 backdrop-blur-md border border-white/20 shadow-2xl">
               <Calendar
                 onChange={handleDateChange}
                 value={date}
@@ -154,22 +160,11 @@ export const BlogPage: React.FC<BlogPageProps> = ({ audioRef, currentTrack, onTr
                 maxDate={new Date(2095, 9, 31)}
                 className="blog-calendar"
                 onClickDay={onClickDay}
+                formatShortWeekday={(locale, date) => 
+                  ['S', 'M', 'T', 'W', 'T', 'F', 'S'][date.getDay()]
+                }
               />
             </div>
-          </div>
-
-          {/* Music panel with lighter glass effect */}
-          <div className="right-music-column ml-auto bg-white/20 backdrop-blur-sm rounded-3xl p-6 border border-white/10 shadow-xl">
-            <MusicPanel 
-              audioRef={audioRef} 
-              currentTrack={currentTrack} 
-              onTrackChange={(track) => {
-                // In BlogPage, only handle audio changes locally
-                if (!audioRef.current) return;
-                audioRef.current.src = `/music/${track}-theme.mp3`;
-                audioRef.current.play().catch(err => console.error('Error playing track:', err));
-              }}
-            />
           </div>
         </div>
       </div>
