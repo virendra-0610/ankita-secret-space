@@ -1,20 +1,20 @@
 .music-player {
   position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
+  bottom: 13rem;
+  right: 5rem;
   z-index: 50;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  width: 300px;
+  width: 400px;
 }
 
 .mini-player {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(30, 7, 78, 0.85);
   backdrop-filter: blur(8px);
   border-radius: 1rem;
   padding: 1rem;
-  min-height: 200px;
+  min-height: 250px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   display: grid;
   grid-template-columns: auto 1fr;
@@ -251,7 +251,7 @@
 .track-title {
   font-family: 'Poppins', 'Courier New', Courier, monospace;
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 1rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -330,8 +330,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 4rem;
+  height: 4rem;
   border-radius: 9999px;
   color: #4b5563;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

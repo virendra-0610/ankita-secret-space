@@ -10,14 +10,6 @@ import '../styles/page-layout.css';
 import { MusicPanel } from './MusicPanel';
 import { loadAllNotes, saveNoteForDate, deleteNote } from '../utils/secureStore';
 
-// Unique background images from public folder
-const SLIDES = Array.from(new Set([
-  '/images/backgrounds/bg1.jpg',
-  '/images/backgrounds/bg2.jpg',
-  '/images/backgrounds/bg3.jpg',
-  '/images/backgrounds/bg4.jpg'
-]));
-
 // Calendar Value types
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -30,7 +22,6 @@ interface BlogPageProps {
 
 export const BlogPage: React.FC<BlogPageProps> = ({ audioRef, currentTrack, onTrackChange }) => {
   const [date, setDate] = useState<Value>(new Date());
-  const [slideIndex, setSlideIndex] = useState(0);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [notesList, setNotesList] = useState<Array<{ id: string; text: string; createdAt: string }>>([]);
   const [draft, setDraft] = useState('');
@@ -38,13 +29,6 @@ export const BlogPage: React.FC<BlogPageProps> = ({ audioRef, currentTrack, onTr
   const [fireworks, setFireworks] = useState<Array<{ id: number; x: number; y: number }>>([]);
   const pageRef = useRef<HTMLDivElement>(null);
   const lastPointer = useRef<{ x: number; y: number } | null>(null);
-
-  // Removed stars array as it's no longer needed
-
-  useEffect(() => {
-    const t = setInterval(() => setSlideIndex(i => (i + 1) % SLIDES.length), 10000);
-    return () => clearInterval(t);
-  }, []);
 
   useEffect(() => {
     if (!selectedDate) return;
@@ -96,34 +80,36 @@ export const BlogPage: React.FC<BlogPageProps> = ({ audioRef, currentTrack, onTr
       const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
       lastPointer.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
     }}>
-      {/* Global slideshow background */}
-      <div className="fixed inset-0 w-full h-full -z-20">
-        {SLIDES.map((src, i) => (
+      {/* Animated hearts background like heart key page */}
+      <motion.div 
+        className="fixed inset-0 w-full h-full -z-20 bg-gradient-to-br from-rose-100/95 via-pink-100/95 to-rose-200/95 backdrop-blur-md overflow-hidden"
+      >
+        {/* Floating hearts background */}
+        {[...Array(20)].map((_, i) => (
           <motion.div
-            key={src}
-            className="calendar-slide fixed inset-0 w-full h-full"
-            style={{ 
-              backgroundImage: `url(${src})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center center',
-              backgroundRepeat: 'no-repeat',
-              willChange: 'opacity, transform',
-              filter: 'brightness(1.1) contrast(1.1)',
-              objectFit: 'cover',
-              width: '100vw',
-              height: '100vh'
+            key={i}
+            className="absolute text-2xl opacity-50"
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              color: `rgba(${90 + Math.random() * 65}, ${100 + Math.random() * 50}, ${150 + Math.random() * 50}, 0.4)`,
             }}
-            animate={{ 
-              opacity: i === slideIndex ? 1 : 0, 
-              scale: i === slideIndex ? 1.05 : 1 
+            animate={{
+              y: ['0%', '100%'],
+              x: ['0%', `${Math.random() * 70 - 25}%`],
+              rotate: [0, 360],
+              scale: [1.5, 1.7, 1.5],
             }}
-            transition={{ 
-              opacity: { duration: 3, ease: [0.4, 0, 0.2, 1] }, 
-              scale: { duration: 10, ease: 'easeInOut' } 
+            transition={{
+              duration: 15 + Math.random() * 10,
+              repeat: Infinity,
+              ease: 'easeInOut',
             }}
-          />
+          >
+            ♥
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* Pause text with animation */}
       <div className="absolute top-6 left-8 z-10 flex items-center gap-3">
@@ -136,7 +122,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({ audioRef, currentTrack, onTr
           🌸
         </motion.span>
         <motion.h2 
-          className="text-5xl font-mono text-blue-100 mix-blend-difference tracking-widest font-light"
+          className="text-5xl font-mono text-red-900 mix-blend-difference tracking-widest font-light"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1, ease: "easeOut" }}
