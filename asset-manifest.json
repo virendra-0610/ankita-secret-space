@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/Anlita's-secret-space/static/css/main.ccdb44a4.css",
-    "main.js": "/Anlita's-secret-space/static/js/main.482ccd40.js",
-    "static/js/453.90d361d3.chunk.js": "/Anlita's-secret-space/static/js/453.90d361d3.chunk.js",
-    "index.html": "/Anlita's-secret-space/index.html",
-    "main.ccdb44a4.css.map": "/Anlita's-secret-space/static/css/main.ccdb44a4.css.map",
-    "main.482ccd40.js.map": "/Anlita's-secret-space/static/js/main.482ccd40.js.map",
-    "453.90d361d3.chunk.js.map": "/Anlita's-secret-space/static/js/453.90d361d3.chunk.js.map"
+    "main.css": "/Ankita's-secret-space/static/css/main.ccdb44a4.css",
+    "main.js": "/Ankita's-secret-space/static/js/main.65756b2b.js",
+    "static/js/453.90d361d3.chunk.js": "/Ankita's-secret-space/static/js/453.90d361d3.chunk.js",
+    "index.html": "/Ankita's-secret-space/index.html",
+    "main.ccdb44a4.css.map": "/Ankita's-secret-space/static/css/main.ccdb44a4.css.map",
+    "main.65756b2b.js.map": "/Ankita's-secret-space/static/js/main.65756b2b.js.map",
+    "453.90d361d3.chunk.js.map": "/Ankita's-secret-space/static/js/453.90d361d3.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.ccdb44a4.css",
-    "static/js/main.482ccd40.js"
+    "static/js/main.65756b2b.js"
   ]
 }
